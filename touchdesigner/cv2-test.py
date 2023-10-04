@@ -31,4 +31,5 @@ def onCook(scriptOp):
 		img[dst>0.01*dst.max()]=[0,0,255, 255]
     
 		scriptOp.copyNumpyArray(img)  
+  
 	return
