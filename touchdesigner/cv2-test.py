@@ -33,7 +33,7 @@ def onCook(scriptOp):
 
         # Threshold for an optimal value, it may vary depending on the image.
         # touch is working in RGBA
-        img[dst > 0.01 * dst.max()] = [0, 0, 255, 255]
+        img[dst > 0.01 * dst.max()] = [255, 0, 0, 255]
 
         scriptOp.copyNumpyArray(img)
 
