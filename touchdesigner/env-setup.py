@@ -8,7 +8,7 @@ import platform
 
 def onStart():
     user = "josec"
-    condaEnv = "td-cv"
+    condaEnv = "td-cv2"
 
     if platform.system() == "Windows":
         print(f"Python Version: {sys.version_info.major}.{sys.version_info.minor}")

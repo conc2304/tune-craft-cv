@@ -5,7 +5,21 @@ import numpy as np
 import cv2
 import mediapipe as mp
 
-print(mp.__version__)
+print("Media Pipe: ", mp.__version__)
+
+# print(mp.__version__)
+
+
+mp_objectron = mp.solutions.objectron
+mp_drawing = mp.solutions.drawing_utils
+
+objectron = mp_objectron.Objectron(
+    static_image_mode=False,
+    max_num_objects=1,
+    min_detection_confidence=0.4,
+    min_tracking_confidence=0.70,
+    model_name="Cup",
+)
 
 
 # press 'Setup Parameters' in the OP to call this function to re-create the parameters.
@@ -21,20 +35,36 @@ def onPulse(par):
 def onCook(scriptOp):
     # grab the input to the scriptTOP with a frame delayed
     # for faster operation (compare TopTo CHOP)
-    img = scriptOp.inputs[0].numpyArray(delayed=True)
+    # rgba values as 0-1
+    video_feed = scriptOp.inputs[0].numpyArray(delayed=True)
 
-    if not img is None:
-        gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-        gray = np.float32(gray)
+    if not video_feed is None:
+        image = cv2.cvtColor(video_feed, cv2.COLOR_BGR2RGB)
 
-        dst = cv2.cornerHarris(gray, 2, 3, 0.04)
+        # Remap the values to the range [0, 255]
+        image = np.interp(image, (0, 1), (0, 255))
+        # convert data to uint8
+        image = np.uint8(image)
+        results = objectron.process(image)
+        objectDetected = results.detected_objects
 
-        dst = cv2.dilate(dst, None)
+        print(objectDetected)
+        if results.detected_objects:
+            for detected_object in results.detected_objects:
+                mp_drawing.draw_landmarks(
+                    image, detected_object.landmarks_2d, mp_objectron.BOX_CONNECTIONS
+                )
 
-        # Threshold for an optimal value, it may vary depending on the image.
-        # touch is working in RGBA
-        img[dst > 0.01 * dst.max()] = [255, 0, 0, 255]
+                mp_drawing.draw_axis(
+                    image, detected_object.rotation, detected_object.translation
+                )
 
-        scriptOp.copyNumpyArray(img)
+                # export data to table for touch to use
+
+        image = cv2.flip(image, 1)
+        image = np.interp(image, (0, 255), (0, 1))
+        image = np.float32(image)
+        image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+        scriptOp.copyNumpyArray(image)
 
     return
