@@ -3,12 +3,11 @@ import os
 import platform
 
 # C:/Users/josec/anaconda3/envs/td-cv/Lib/site-packages
-# C:/Users/josec/anaconda3/envs/td-cv/Lib/site-packages
 
 
 def onStart():
     user = "josec"
-    condaEnv = "td-cv2"
+    condaEnv = "td-cv"
 
     if platform.system() == "Windows":
         print(f"Python Version: {sys.version_info.major}.{sys.version_info.minor}")

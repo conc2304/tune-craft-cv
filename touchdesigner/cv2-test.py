@@ -7,9 +7,6 @@ import mediapipe as mp
 
 print("Media Pipe: ", mp.__version__)
 
-# print(mp.__version__)
-
-
 mp_objectron = mp.solutions.objectron
 mp_drawing = mp.solutions.drawing_utils
 
