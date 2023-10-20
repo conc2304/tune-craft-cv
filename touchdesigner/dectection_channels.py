@@ -15,14 +15,15 @@ def onPulse(par):
 def onCook(scriptOp):
     scriptOp.clear()
 
+    # get the data we stored in the
     object_detection = op("object_detector").fetch("detection")
     # print(object_detection)
 
-    # create chanels
+    # create channels with the names we want
     num_object_detected = len(object_detection)
     scriptOp.numSamples = num_object_detected
-    print(scriptOp.numSamples)
-    i = 0
+
+    id = 0
     for object in object_detection:
         object_name = object["item"]
 
@@ -30,10 +31,9 @@ def onCook(scriptOp):
             if key == "item":
                 continue
 
-            channel_name = f"{object_name}_{i}_{key}"
+            channel_name = f"{object_name}_{id}_{key}"
             chan = scriptOp.appendChan(channel_name)
             chan[0] = value
-            print(channel_name, value)
-        i += 1
+        id += 1
 
     return

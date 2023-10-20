@@ -67,12 +67,10 @@ def onCook(scriptOp):
         image = np.uint8(image)
 
         export_data = []
+        # running multiple objectrons, one for each item type we are looking for
         for item in objectrons:
             for object_name, objectron in item.items():
                 results = objectron.process(image)
-                objectDetected = results.detected_objects
-
-                # print(f"Detected {object_name}: ", objectDetected)
 
                 if results.detected_objects:
                     for detected_object in results.detected_objects:
@@ -81,35 +79,14 @@ def onCook(scriptOp):
                             detected_object.landmarks_2d,
                             mp_objectron.BOX_CONNECTIONS,
                         )
-
                         mp_drawing.draw_axis(
                             image, detected_object.rotation, detected_object.translation
                         )
-
-                        # export data to table for touch to use
                         angles = rotationMatrixToEulerAngles(
                             np.array(detected_object.rotation)
                         )
 
-                        # print(detected_object.translation)
-
                         num_decimals = 4
-                        # feature_data = [
-                        #     object_name,
-                        #     concat_to_decimals(
-                        #         detected_object.translation[0], num_decimals
-                        #     ),
-                        #     concat_to_decimals(
-                        #         detected_object.translation[1], num_decimals
-                        #     ),
-                        #     concat_to_decimals(
-                        #         detected_object.translation[2], num_decimals
-                        #     ),
-                        #     concat_to_decimals(angles[0], num_decimals),
-                        #     concat_to_decimals(angles[1], num_decimals),
-                        #     concat_to_decimals(angles[2], num_decimals),
-                        # ]
-
                         feature_data = {
                             "item": object_name,
                             "tx": concat_to_decimals(
