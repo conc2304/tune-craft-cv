@@ -66,6 +66,7 @@ def onCook(scriptOp):
         # convert data to uint8
         image = np.uint8(image)
 
+        export_data = []
         for item in objectrons:
             for object_name, objectron in item.items():
                 results = objectron.process(image)
@@ -74,14 +75,6 @@ def onCook(scriptOp):
                 # print(f"Detected {object_name}: ", objectDetected)
 
                 if results.detected_objects:
-                    # op(f"rotation_table_{object_name}").clear()
-                    # op(f"translation_table_{object_name}").clear()
-
-                    op("feature_data").clear()
-                    op("feature_data").appendRow(
-                        ["object", "Tx", "Ty", "Tz", "Rx", "Ry", "Rz"]
-                    )
-
                     for detected_object in results.detected_objects:
                         mp_drawing.draw_landmarks(
                             image,
@@ -100,22 +93,46 @@ def onCook(scriptOp):
 
                         # print(detected_object.translation)
 
-                        feature_data = [
-                            object_name,
-                            detected_object.translation[0],
-                            detected_object.translation[1],
-                            detected_object.translation[2],
-                            angles[0],
-                            angles[1],
-                            angles[2],
-                        ]
+                        num_decimals = 4
+                        # feature_data = [
+                        #     object_name,
+                        #     concat_to_decimals(
+                        #         detected_object.translation[0], num_decimals
+                        #     ),
+                        #     concat_to_decimals(
+                        #         detected_object.translation[1], num_decimals
+                        #     ),
+                        #     concat_to_decimals(
+                        #         detected_object.translation[2], num_decimals
+                        #     ),
+                        #     concat_to_decimals(angles[0], num_decimals),
+                        #     concat_to_decimals(angles[1], num_decimals),
+                        #     concat_to_decimals(angles[2], num_decimals),
+                        # ]
+
+                        feature_data = {
+                            "item": object_name,
+                            "tx": concat_to_decimals(
+                                detected_object.translation[0], num_decimals
+                            ),
+                            "ty": concat_to_decimals(
+                                detected_object.translation[1], num_decimals
+                            ),
+                            "tz": concat_to_decimals(
+                                detected_object.translation[2], num_decimals
+                            ),
+                            "rx": concat_to_decimals(angles[0], num_decimals),
+                            "ry": concat_to_decimals(angles[1], num_decimals),
+                            "rz": concat_to_decimals(angles[2], num_decimals),
+                        }
 
                         # op("translation_table").appendRow(detected_object.translation)
                         # # for arr in detected_object.rotation:
                         # op("rotation_table").appendRow(angles)
+                        # op("feature_data").appendRow(feature_data)
+                        export_data.append(feature_data)
 
-                        op("feature_data").appendRow(feature_data)
-
+        scriptOp.store("detection", export_data)
         # image = cv2.flip(image, 1)
         image = np.interp(image, (0, 255), (0, 1))
         image = np.float32(image)
@@ -207,6 +224,14 @@ def get_aruco_marker_data(image):
     output = output.astype("uint8")
 
     return corners, ids
+
+
+def concat_to_decimals(number, decimals):
+    format_string = "{:.{}f}".format(number, decimals)
+    formatted_number = format_string.rstrip("0")  # Remove trailing zeros
+    if formatted_number.endswith("."):
+        formatted_number = formatted_number[:-1]  # Remove trailing dot if no decimals
+    return formatted_number
 
 
 # https://learnopencv.com/rotation-matrix-to-euler-angles/
