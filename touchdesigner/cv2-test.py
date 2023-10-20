@@ -7,21 +7,38 @@ import mediapipe as mp
 import math
 import imutils
 
+print("Imutils: ", imutils.__version__)
 print("Media Pipe: ", mp.__version__)
+print("ME:", me)
 
 mp_objectron = mp.solutions.objectron
 mp_drawing = mp.solutions.drawing_utils
 
-objectron = mp_objectron.Objectron(
+Resolution = (640, 360)
+objectron_shoe = mp_objectron.Objectron(
     static_image_mode=False,
-    max_num_objects=1,
+    max_num_objects=2,
+    min_detection_confidence=0.4,
+    min_tracking_confidence=0.70,
+    model_name="Shoe",
+    image_size=Resolution,
+)
+
+objectron_cup = mp_objectron.Objectron(
+    static_image_mode=False,
+    max_num_objects=2,
     min_detection_confidence=0.4,
     min_tracking_confidence=0.70,
     model_name="Cup",
+    image_size=Resolution,
 )
 
 
-# press 'Setup Parameters' in the OP to call this function to re-create the parameters.
+print("ME:", me)
+
+
+# press 'Setup Parameters' in the OP to call this function to re-create the pa
+# rameters.
 def onSetupParameters(scriptOp):
     return
 
@@ -38,36 +55,68 @@ def onCook(scriptOp):
     # rgba values as 0-1
     video_feed = scriptOp.inputs[0].numpyArray(delayed=True)
 
-    if not video_feed is None:
+    objectrons = [{"shoe": objectron_shoe}, {"cup": objectron_cup}]
+
+    if not (video_feed is None or objectron_shoe is None):
+        print("[RUN]")
         image = cv2.cvtColor(video_feed, cv2.COLOR_BGR2RGB)
 
         # Remap the values to the range [0, 255]
         image = np.interp(image, (0, 1), (0, 255))
         # convert data to uint8
         image = np.uint8(image)
-        results = objectron.process(image)
-        objectDetected = results.detected_objects
 
-        print(objectDetected)
-        if results.detected_objects:
-            op("rotation_table").clear()
-            op("translation_table").clear()
-            for detected_object in results.detected_objects:
-                mp_drawing.draw_landmarks(
-                    image, detected_object.landmarks_2d, mp_objectron.BOX_CONNECTIONS
-                )
+        for item in objectrons:
+            for object_name, objectron in item.items():
+                results = objectron.process(image)
+                objectDetected = results.detected_objects
 
-                mp_drawing.draw_axis(
-                    image, detected_object.rotation, detected_object.translation
-                )
+                # print(f"Detected {object_name}: ", objectDetected)
 
-                # export data to table for touch to use
-                op("translation_table").appendRow(detected_object.translation)
-                angles = rotationMatrixToEulerAngles(np.array(detected_object.rotation))
-                # for arr in detected_object.rotation:
-                op("rotation_table").appendRow(angles)
+                if results.detected_objects:
+                    # op(f"rotation_table_{object_name}").clear()
+                    # op(f"translation_table_{object_name}").clear()
 
-        image = cv2.flip(image, 1)
+                    op("feature_data").clear()
+                    op("feature_data").appendRow(
+                        ["object", "Tx", "Ty", "Tz", "Rx", "Ry", "Rz"]
+                    )
+
+                    for detected_object in results.detected_objects:
+                        mp_drawing.draw_landmarks(
+                            image,
+                            detected_object.landmarks_2d,
+                            mp_objectron.BOX_CONNECTIONS,
+                        )
+
+                        mp_drawing.draw_axis(
+                            image, detected_object.rotation, detected_object.translation
+                        )
+
+                        # export data to table for touch to use
+                        angles = rotationMatrixToEulerAngles(
+                            np.array(detected_object.rotation)
+                        )
+
+                        # print(detected_object.translation)
+
+                        feature_data = [
+                            object_name,
+                            detected_object.translation[0],
+                            detected_object.translation[1],
+                            detected_object.translation[2],
+                            angles[0],
+                            angles[1],
+                            angles[2],
+                        ]
+
+                        # op("translation_table").appendRow(detected_object.translation)
+                        # # for arr in detected_object.rotation:
+                        # op("rotation_table").appendRow(angles)
+
+                        op("feature_data").appendRow(feature_data)
+
+        # image = cv2.flip(image, 1)
         image = np.interp(image, (0, 255), (0, 1))
         image = np.float32(image)
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
