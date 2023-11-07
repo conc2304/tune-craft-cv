@@ -3,12 +3,16 @@
 
 import numpy as np
 import cv2
+
+import cv2.aruco as aruco
 import mediapipe as mp
 import math
 import imutils
 
 print("Imutils: ", imutils.__version__)
 print("Media Pipe: ", mp.__version__)
+print("Open CV: ", cv2.__version__)
+print("ARUCO: ", aruco)
 print("ME:", me)
 
 mp_objectron = mp.solutions.objectron
@@ -16,8 +20,8 @@ mp_drawing = mp.solutions.drawing_utils
 
 Resolution = (640, 360)
 objectron_shoe = mp_objectron.Objectron(
-    static_image_mode=False,
-    max_num_objects=2,
+    static_image_mode=True,
+    max_num_objects=1,
     min_detection_confidence=0.4,
     min_tracking_confidence=0.70,
     model_name="Shoe",
@@ -25,8 +29,8 @@ objectron_shoe = mp_objectron.Objectron(
 )
 
 objectron_cup = mp_objectron.Objectron(
-    static_image_mode=False,
-    max_num_objects=2,
+    static_image_mode=True,
+    max_num_objects=1,
     min_detection_confidence=0.4,
     min_tracking_confidence=0.70,
     model_name="Cup",
@@ -86,6 +90,8 @@ def onCook(scriptOp):
                             np.array(detected_object.rotation)
                         )
 
+                        print(detected_object)
+
                         num_decimals = 4
                         feature_data = {
                             "item": object_name,
@@ -119,90 +125,6 @@ def onCook(scriptOp):
     return
 
 
-# https://pyimagesearch.com/2021/01/04/opencv-augmented-reality-ar/
-def get_aruco_marker_data(image):
-    if image is None:
-        return None, None
-
-    (imgH, imgW) = image.shape[:2]
-    # load the ArUCo dictionary, grab the ArUCo parameters, and detect
-    # the markers
-    print("[INFO] detecting markers...")
-    arucoDict = cv2.aruco.Dictionary_get(cv2.aruco.DICT_ARUCO_ORIGINAL)
-    arucoParams = cv2.aruco.DetectorParameters_create()
-    (corners, ids, rejected) = cv2.aruco.detectMarkers(
-        image, arucoDict, parameters=arucoParams
-    )
-    # if we have not found four markers in the input image then we cannot
-    # apply our augmented reality technique
-    if len(corners) != 4:
-        print("[INFO] could not find 4 corners...exiting")
-        # sys.exit(0)
-    else:
-        print("[INFO] Markers detected")
-        print(corners, ids)
-
-    # otherwise, we've found the four ArUco markers, so we can continue
-    # by flattening the ArUco IDs list and initializing our list of
-    # reference points
-    print("[INFO] constructing augmented reality visualization...")
-    ids = ids.flatten()
-    refPts = []
-    # loop over the IDs of the ArUco markers in top-left, top-right,
-    # bottom-right, and bottom-left order
-    # TODO - UPDATE THESE IDS with MINE
-    for i in (923, 1001, 241, 1007):
-        # grab the index of the corner with the current ID and append the
-        # corner (x, y)-coordinates to our list of reference points
-        j = np.squeeze(np.where(ids == i))
-        corner = np.squeeze(corners[j])
-        refPts.append(corner)
-
-    # unpack our ArUco reference points and use the reference points to
-    # define the *destination* transform matrix, making sure the points
-    # are specified in top-left, top-right, bottom-right, and bottom-left
-    # order
-    (refPtTL, refPtTR, refPtBR, refPtBL) = refPts
-    dstMat = [refPtTL[0], refPtTR[1], refPtBR[2], refPtBL[3]]
-    dstMat = np.array(dstMat)
-    # grab the spatial dimensions of the source image and define the
-    # transform matrix for the *source* image in top-left, top-right,
-    # bottom-right, and bottom-left order
-    # TODO source is the UI that needs to be mapped in space
-    (srcH, srcW) = source.shape[:2]
-    srcMat = np.array([[0, 0], [srcW, 0], [srcW, srcH], [0, srcH]])
-    # compute the homography matrix and then warp the source image to the
-    # destination based on the homography
-    (H, _) = cv2.findHomography(srcMat, dstMat)
-    warped = cv2.warpPerspective(source, H, (imgW, imgH))
-
-    # construct a mask for the source image now that the perspective warp
-    # has taken place (we'll need this mask to copy the source image into
-    # the destination)
-    mask = np.zeros((imgH, imgW), dtype="uint8")
-    cv2.fillConvexPoly(mask, dstMat.astype("int32"), (255, 255, 255), cv2.LINE_AA)
-    # this step is optional, but to give the source image a black border
-    # surrounding it when applied to the source image, you can apply a
-    # dilation operation
-    rect = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
-    mask = cv2.dilate(mask, rect, iterations=2)
-    # create a three channel version of the mask by stacking it depth-wise,
-    # such that we can copy the warped source image into the input image
-    maskScaled = mask.copy() / 255.0
-    maskScaled = np.dstack([maskScaled] * 3)
-    # copy the warped source image into the input image by (1) multiplying
-    # the warped image and masked together, (2) multiplying the original
-    # input image with the mask (giving more weight to the input where
-    # there *ARE NOT* masked pixels), and (3) adding the resulting
-    # multiplications together
-    warpedMultiplied = cv2.multiply(warped.astype("float"), maskScaled)
-    imageMultiplied = cv2.multiply(image.astype(float), 1.0 - maskScaled)
-    output = cv2.add(warpedMultiplied, imageMultiplied)
-    output = output.astype("uint8")
-
-    return corners, ids
-
-
 def concat_to_decimals(number, decimals):
     format_string = "{:.{}f}".format(number, decimals)
     formatted_number = format_string.rstrip("0")  # Remove trailing zeros
@@ -222,8 +144,6 @@ def isRotationMatrix(R):
 
 
 # Calculates rotation matrix to euler angles
-# The result is the same as MATLAB except the order
-# of the euler angles ( x and z are swapped ).
 def rotationMatrixToEulerAngles(R):
     # assert isRotationMatrix(R)
 

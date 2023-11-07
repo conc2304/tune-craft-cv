@@ -1,9 +1,2 @@
-conda create -n td-cv2 python=3.9.5
-conda install matplotlib
-pip install matplotlib==3.0.3
-conda install opencv-python
-conda install -c menpo opencv
-
-
 this one
 conda env create -f environment.yml
