@@ -2,12 +2,12 @@ import sys
 import os
 import platform
 
-# C:/Users/josec/anaconda3/envs/td-cv/Lib/site-packages
+# C:/Users/josec/anaconda3/envs/td-cv2/Lib/site-packages
 
 
 def onStart():
     user = "josec"
-    condaEnv = "td-cv"
+    condaEnv = "td-cv2"
 
     if platform.system() == "Windows":
         print(f"Python Version: {sys.version_info.major}.{sys.version_info.minor}")
@@ -21,6 +21,14 @@ def onStart():
             os.add_dll_directory(
                 "C:/Users/" + user + "/anaconda3/envs/" + condaEnv + "/Library/bin"
             )
+            os.add_dll_directory(
+                "C:/Users/"
+                + user
+                + "/anaconda3/envs/"
+                + condaEnv
+                + "/Lib/site-packages"
+            )
+
         else:
             """
             Double check all the following paths, it could be that your anaconda 'envs' folder is not in your User folder depending on your conda install settings and conda version.

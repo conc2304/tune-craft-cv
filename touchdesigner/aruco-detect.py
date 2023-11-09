@@ -7,9 +7,7 @@ import cv2
 # import cv2.aruco as aruco
 import mediapipe as mp
 import math
-import imutils
 
-print("Imutils: ", imutils.__version__)
 print("Media Pipe: ", mp.__version__)
 print("Open CV: ", cv2.__version__)
 print("ARUCO: ", cv2.aruco)
@@ -17,6 +15,17 @@ print("ME:", me)
 
 
 Resolution = (640, 360)
+
+LOG_ON = True
+DO_DRAW = True
+Storage_Op = "aruco_detector"
+Storage_Loc = "centroids"
+# op(Storage_Op).store(Storage_Loc, {})
+
+
+def log(str):
+    if LOG_ON:
+        print(str)
 
 
 # press 'Setup Parameters' in the OP to call this function to re-create the pa
@@ -27,11 +36,24 @@ def onSetupParameters(scriptOp):
 
 # called whenever custom pulse parameter is pushed
 def onPulse(par):
+    log("[PULSE]")
     return
 
 
 def onCook(scriptOp):
-    print("[COOK]")
+    log("[COOK]")
+
+    corners_store = scriptOp.fetch(Storage_Loc, [], storeDefault=True)
+    log(f"corners_store {len(corners_store)}")
+    # If we have all 4 corners we dont need to get them again
+    if corners_store != None and len(corners_store) == 4:
+        scriptOp.store("num_corners", 4)
+        log(f"Corners Storage Found")
+
+        return
+
+    scriptOp.store("num_corners", 0)
+
     # grab the input to the scriptTOP with a frame delayed
     # for faster operation (compare TopTo CHOP)
     # rgba values as 0-1
@@ -40,22 +62,19 @@ def onCook(scriptOp):
     if video_feed is None:
         return
 
-    print("[RUN - ARUCO]")
+    log("[RUN - ARUCO]")
     image = cv2.cvtColor(video_feed, cv2.COLOR_BGR2RGB)
 
     # Remap the values to the range [0, 255]
     image = np.interp(image, (0, 1), (0, 255))
-    # convert data to uint8
 
+    # convert data to uint8
     image = np.uint8(image)
 
-    get_aruco_marker_data(image=image)
+    centroids = get_aruco_marker_data(image=image)
 
-    export_data = []
-    # running multiple objectrons, one for each item type we are looking for
+    scriptOp.store(Storage_Loc, centroids)
 
-    scriptOp.store("detection", export_data)
-    # image = cv2.flip(image, 1)
     image = np.interp(image, (0, 255), (0, 1))
     image = np.float32(image)
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
@@ -70,11 +89,10 @@ def get_aruco_marker_data(image):
         return None, None
 
     (imgH, imgW) = image.shape[:2]
-    # image = cv2.flip(image, 1)
-    #
+
     # load the ArUCo dictionary, grab the ArUCo parameters, and detect
     # the markers
-    print("[INFO] detecting markers...")
+    log("[INFO] detecting markers...")
     arucoDict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_ARUCO_ORIGINAL)
     # arucoParams = cv2.aruco
     # print(cv2.aruco.DetectorParameters())
@@ -83,32 +101,22 @@ def get_aruco_marker_data(image):
     # if we have not found four markers in the input image then we cannot
     # apply our augmented reality technique
     if len(corners) != 4:
-        print("[INFO] could not find 4 corners...exiting")
+        log("[INFO] could not find 4 corners...exiting")
         return None
     else:
-        print("[INFO] Markers detected")
-        print("CORNERS: ", corners)
-        print("CORNERS: ", len(corners))
-        print("CORNER IDS: ", ids)
+        log(f"[INFO] Markers detected")
+        log(f"CORNERS: {corners}")
+        log(f"CORNERS: {len(corners)}")
+        log(f"CORNER IDS: {ids}")
 
     # otherwise, we've found the four ArUco markers, so we can continue
     # by flattening the ArUco IDs list and initializing our list of
     # reference points
     ids = ids.flatten()
 
-    print("ids: ", ids)
-    refPts = []
-    # loop over the IDs of the ArUco markers in top-left, top-right,
-    # bottom-right, and bottom-left order
-    # TODO - UPDATE THESE IDS with MINE
-    # for i in (0, 1, 2, 3):
-    # for i in (0, 256, 512, 768):
-    #     # grab the index of the corner with the current ID and append the
-    #     # corner (x, y)-coordinates to our list of reference points
-    #     j = np.squeeze(np.where(ids == i))
-    #     corner = np.squeeze(corners[j])
-    #     refPts.append(corner)
+    log(f"ids: {ids}")
 
+    centroids = []
     for markerCorner, markerID in zip(corners, ids):
         # extract the marker corners (which are always returned in
         # top-left, top-right, bottom-right, and bottom-left order)
@@ -133,8 +141,8 @@ def get_aruco_marker_data(image):
         cX = int((topLeft[0] + bottomRight[0]) / 2.0)
         cY = int((topLeft[1] + bottomRight[1]) / 2.0)
         cv2.circle(image, (cX, cY), 4, (0, 0, 255), -1)
+
         # draw the ArUco marker ID on the image
-        # cv2.flip(image, 1)
         cv2.putText(
             image,
             str(markerID),
@@ -145,9 +153,8 @@ def get_aruco_marker_data(image):
             2,
         )
 
-        print("[INFO] ArUco marker ID: {}".format(markerID))
+        centroids.append((cX, cY))
 
-    # unpack our ArUco reference points and use the reference points to
-    # define the *destination* transform matrix, making sure the points
-    # are specified in top-left, top-right, bottom-right, and bottom-left
-    # order
+        # log("[INFO] ArUco marker ID: {}".format(markerID))
+
+    return centroids

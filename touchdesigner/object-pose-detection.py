@@ -1,15 +1,18 @@
 # me - this DAT
 # scriptOp - the OP which is cooking
 
+print("POSE DETECTOR")
 import numpy as np
 import cv2
-
 import cv2.aruco as aruco
 import mediapipe as mp
 import math
-import imutils
 
-print("Imutils: ", imutils.__version__)
+print("ME:", me)
+
+# import imutils
+
+# print("Imutils: ", imutils.__version__)
 print("Media Pipe: ", mp.__version__)
 print("Open CV: ", cv2.__version__)
 print("ARUCO: ", aruco)
@@ -53,7 +56,7 @@ def onPulse(par):
 
 
 def onCook(scriptOp):
-    print("[COOK]")
+    print("[COOK - OPD]")
     # grab the input to the scriptTOP with a frame delayed
     # for faster operation (compare TopTo CHOP)
     # rgba values as 0-1
@@ -115,12 +118,11 @@ def onCook(scriptOp):
                         # op("feature_data").appendRow(feature_data)
                         export_data.append(feature_data)
 
-        scriptOp.store("detection", export_data)
-        # image = cv2.flip(image, 1)
         image = np.interp(image, (0, 255), (0, 1))
         image = np.float32(image)
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
         scriptOp.copyNumpyArray(image)
+        scriptOp.store("detection", export_data)
 
     return
 

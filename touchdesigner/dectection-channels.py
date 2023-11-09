@@ -17,7 +17,6 @@ def onCook(scriptOp):
 
     # get the data we stored in the
     object_detection = op("object_detector").fetch("detection")
-    # print(object_detection)
 
     # create channels with the names we want
     num_object_detected = len(object_detection)
