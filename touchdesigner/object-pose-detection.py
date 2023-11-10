@@ -18,6 +18,7 @@ print("Open CV: ", cv2.__version__)
 print("ARUCO: ", aruco)
 print("ME:", me)
 
+
 mp_objectron = mp.solutions.objectron
 mp_drawing = mp.solutions.drawing_utils
 
@@ -36,12 +37,16 @@ objectron_cup = mp_objectron.Objectron(
     max_num_objects=1,
     min_detection_confidence=0.4,
     min_tracking_confidence=0.70,
-    model_name="Cup",
+    model_name="Chair",
     image_size=Resolution,
 )
 
+LOG_ON = False
 
-print("ME:", me)
+
+def log(*args):
+    if LOG_ON:
+        print(*args)
 
 
 # press 'Setup Parameters' in the OP to call this function to re-create the pa
@@ -56,7 +61,7 @@ def onPulse(par):
 
 
 def onCook(scriptOp):
-    print("[COOK - OPD]")
+    log("[COOK - OPD]")
     # grab the input to the scriptTOP with a frame delayed
     # for faster operation (compare TopTo CHOP)
     # rgba values as 0-1
@@ -65,7 +70,7 @@ def onCook(scriptOp):
     objectrons = [{"shoe": objectron_shoe}, {"cup": objectron_cup}]
 
     if not (video_feed is None or objectron_shoe is None):
-        print("[RUN]")
+        log("[RUN]")
         image = cv2.cvtColor(video_feed, cv2.COLOR_BGR2RGB)
 
         # Remap the values to the range [0, 255]
@@ -81,6 +86,20 @@ def onCook(scriptOp):
 
                 if results.detected_objects:
                     for detected_object in results.detected_objects:
+                        landmarks = []
+                        for i, landmark in enumerate(
+                            detected_object.landmarks_2d.landmark
+                        ):
+                            l = {
+                                "x": landmark.x,
+                                "y": landmark.y,
+                            }
+                            # print("l: ", landmark.x)
+                            landmarks.append(l)
+
+                        # print("----T----", detected_object.translation)
+                        # print("----R----", detected_object.rotation)
+
                         mp_drawing.draw_landmarks(
                             image,
                             detected_object.landmarks_2d,
@@ -89,15 +108,22 @@ def onCook(scriptOp):
                         mp_drawing.draw_axis(
                             image, detected_object.rotation, detected_object.translation
                         )
+
                         angles = rotationMatrixToEulerAngles(
                             np.array(detected_object.rotation)
                         )
 
-                        print(detected_object)
+                        log(detected_object)
 
                         num_decimals = 4
+                        center = find_center_landmark(landmarks)
+
+                        # print("----C----", center)
+
                         feature_data = {
                             "item": object_name,
+                            "cx": concat_to_decimals(center["x"], num_decimals),
+                            "cy": concat_to_decimals(center["y"], num_decimals),
                             "tx": concat_to_decimals(
                                 detected_object.translation[0], num_decimals
                             ),
@@ -112,10 +138,6 @@ def onCook(scriptOp):
                             "rz": concat_to_decimals(angles[2], num_decimals),
                         }
 
-                        # op("translation_table").appendRow(detected_object.translation)
-                        # # for arr in detected_object.rotation:
-                        # op("rotation_table").appendRow(angles)
-                        # op("feature_data").appendRow(feature_data)
                         export_data.append(feature_data)
 
         image = np.interp(image, (0, 255), (0, 1))
@@ -133,6 +155,25 @@ def concat_to_decimals(number, decimals):
     if formatted_number.endswith("."):
         formatted_number = formatted_number[:-1]  # Remove trailing dot if no decimals
     return formatted_number
+
+
+def find_center_landmark(landmarks):
+    # Initialize sums of x and y coordinates
+    log("find_center_landmark")
+    log(landmarks)
+    sum_x = 0
+    sum_y = 0
+
+    # Iterate over all landmarks to sum up the coordinates
+    for landmark in landmarks:
+        sum_x += landmark["x"]
+        sum_y += landmark["y"]
+
+    # Calculate the average x and y coordinates
+    center_x = sum_x / len(landmarks)
+    center_y = sum_y / len(landmarks)
+
+    return {"x": center_x, "y": center_y}
 
 
 # https://learnopencv.com/rotation-matrix-to-euler-angles/

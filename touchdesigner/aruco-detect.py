@@ -16,7 +16,7 @@ print("ME:", me)
 
 Resolution = (640, 360)
 
-LOG_ON = True
+LOG_ON = False
 DO_DRAW = True
 Storage_Op = "aruco_detector"
 Storage_Loc = "centroids"

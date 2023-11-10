@@ -21,16 +21,10 @@ def onCook(scriptOp):
     centroids = op(Storage_Op).fetch(Storage_Loc)
     # print("CENTROIDS", centroids)
 
-    newlist = op("script2").chans("c_*")
-    print("newlist- ", newlist)
-    for el in newlist:
-        print(el)
-
     if len(centroids) != 4:
         # Exit out
         # We dont have a way to only update the 'detected' value in storage while keeping everything intact
 
-        print("NO CORNERS")
         # Get the corners from storage
         stored_corners = op("script2").chans("c_*")
         # Clear the Storage
