@@ -8,16 +8,38 @@ import cv2.aruco as aruco
 import mediapipe as mp
 import math
 
-print("ME:", me)
-
-# import imutils
-
-# print("Imutils: ", imutils.__version__)
 print("Media Pipe: ", mp.__version__)
 print("Open CV: ", cv2.__version__)
 print("ARUCO: ", aruco)
 print("ME:", me)
 
+
+# """The 9 3D box landmarks."""
+#
+#       3 + + + + + + + + 7
+#       +\                +\          UP
+#       + \               + \
+#       +  \              +  \        |
+#       +   4 + + + + + + + + 8       | y
+#       +   +             +   +       |
+#       +   +             +   +       |
+#       +   +     (0)     +   +       .------- x
+#       +   +             +   +        \
+#       1 + + + + + + + + 5   +         \
+#        \  +              \  +          \ z
+#         \ +               \ +           \
+#          \+                \+
+#           2 + + + + + + + + 6
+
+CENTER = 0
+BACK_BOTTOM_LEFT = 1
+FRONT_BOTTOM_LEFT = 2
+BACK_TOP_LEFT = 3
+FRONT_TOP_LEFT = 4
+BACK_BOTTOM_RIGHT = 5
+FRONT_BOTTOM_RIGHT = 6
+BACK_TOP_RIGHT = 7
+FRONT_TOP_RIGHT = 8
 
 mp_objectron = mp.solutions.objectron
 mp_drawing = mp.solutions.drawing_utils
@@ -49,17 +71,6 @@ def log(*args):
         print(*args)
 
 
-# press 'Setup Parameters' in the OP to call this function to re-create the pa
-# rameters.
-def onSetupParameters(scriptOp):
-    return
-
-
-# called whenever custom pulse parameter is pushed
-def onPulse(par):
-    return
-
-
 def onCook(scriptOp):
     log("[COOK - OPD]")
     # grab the input to the scriptTOP with a frame delayed
@@ -86,7 +97,7 @@ def onCook(scriptOp):
 
                 if results.detected_objects:
                     for detected_object in results.detected_objects:
-                        landmarks = []
+                        landmarks_2d = []
                         for i, landmark in enumerate(
                             detected_object.landmarks_2d.landmark
                         ):
@@ -95,10 +106,14 @@ def onCook(scriptOp):
                                 "y": landmark.y,
                             }
                             # print("l: ", landmark.x)
-                            landmarks.append(l)
+                            landmarks_2d.append(l)
 
-                        # print("----T----", detected_object.translation)
-                        # print("----R----", detected_object.rotation)
+                        landmarks_3d = []
+                        for i, landmark in enumerate(
+                            detected_object.landmarks_3d.landmark
+                        ):
+                            l = [landmark.x, landmark.y, landmark.z]
+                            landmarks_3d.append(l)
 
                         mp_drawing.draw_landmarks(
                             image,
@@ -109,33 +124,32 @@ def onCook(scriptOp):
                             image, detected_object.rotation, detected_object.translation
                         )
 
-                        angles = rotationMatrixToEulerAngles(
-                            np.array(detected_object.rotation)
-                        )
-
                         log(detected_object)
 
                         num_decimals = 4
-                        center = find_center_landmark(landmarks)
-
-                        # print("----C----", center)
+                        angles = calculate_rotation_angles(landmarks_3d)
 
                         feature_data = {
                             "item": object_name,
-                            "cx": concat_to_decimals(center["x"], num_decimals),
-                            "cy": concat_to_decimals(center["y"], num_decimals),
-                            "tx": concat_to_decimals(
-                                detected_object.translation[0], num_decimals
+                            "cx": concat_to_decimals(
+                                landmarks_2d[CENTER]["x"], num_decimals
                             ),
-                            "ty": concat_to_decimals(
-                                detected_object.translation[1], num_decimals
-                            ),
-                            "tz": concat_to_decimals(
-                                detected_object.translation[2], num_decimals
+                            "cy": concat_to_decimals(
+                                landmarks_2d[CENTER]["y"], num_decimals
                             ),
                             "rx": concat_to_decimals(angles[0], num_decimals),
                             "ry": concat_to_decimals(angles[1], num_decimals),
                             "rz": concat_to_decimals(angles[2], num_decimals),
+                            # We don't currently need these right now
+                            # "tx": concat_to_decimals(
+                            #     detected_object.translation[0], num_decimals
+                            # ),
+                            # "ty": concat_to_decimals(
+                            #     detected_object.translation[1], num_decimals
+                            # ),
+                            # "tz": concat_to_decimals(
+                            #     detected_object.translation[2], num_decimals
+                            # ),
                         }
 
                         export_data.append(feature_data)
@@ -157,50 +171,32 @@ def concat_to_decimals(number, decimals):
     return formatted_number
 
 
-def find_center_landmark(landmarks):
-    # Initialize sums of x and y coordinates
-    log("find_center_landmark")
-    log(landmarks)
-    sum_x = 0
-    sum_y = 0
+def calculate_rotation_angles(landmarks_3d):
+    # Define vectors for cube's edges
+    vector_x = np.array(landmarks_3d[BACK_BOTTOM_RIGHT]) - np.array(
+        landmarks_3d[BACK_BOTTOM_LEFT]
+    )  # BACK_BOTTOM_RIGHT - BACK_BOTTOM_LEFT
+    vector_y = np.array(landmarks_3d[BACK_TOP_LEFT]) - np.array(
+        landmarks_3d[BACK_BOTTOM_LEFT]
+    )
+    vector_z = np.array(landmarks_3d[FRONT_BOTTOM_LEFT]) - np.array(
+        landmarks_3d[BACK_BOTTOM_LEFT]
+    )
 
-    # Iterate over all landmarks to sum up the coordinates
-    for landmark in landmarks:
-        sum_x += landmark["x"]
-        sum_y += landmark["y"]
+    # Normalize vectors
+    unit_vector_x = vector_x / np.linalg.norm(vector_x)
+    unit_vector_y = vector_y / np.linalg.norm(vector_y)
+    unit_vector_z = vector_z / np.linalg.norm(vector_z)
 
-    # Calculate the average x and y coordinates
-    center_x = sum_x / len(landmarks)
-    center_y = sum_y / len(landmarks)
+    # Calculate rotation angles using atan2
+    angle_x = math.atan2(unit_vector_x[1], unit_vector_x[0])  # Rotation in XY plane
+    angle_y = math.atan2(unit_vector_y[2], unit_vector_y[1])  # Rotation in YZ plane
+    angle_z = math.atan2(unit_vector_z[0], unit_vector_z[2])  # Rotation in ZX plane
 
-    return {"x": center_x, "y": center_y}
+    # Convert angles to degrees and adjust range to [0, 360]
+    angle_x_degrees = (math.degrees(angle_x) + 360) % 360
+    angle_y_degrees = (math.degrees(angle_y) + 360) % 360
+    angle_z_degrees = (math.degrees(angle_z) + 360) % 360
 
-
-# https://learnopencv.com/rotation-matrix-to-euler-angles/
-# Checks if a matrix is a valid rotation matrix.
-def isRotationMatrix(R):
-    Rt = np.transpose(R)
-    shouldBeIdentity = np.dot(Rt, R)
-    I = np.identity(3, dtype=R.dtype)
-    n = np.linalg.norm(I - shouldBeIdentity)
-    return n < 1e-6
-
-
-# Calculates rotation matrix to euler angles
-def rotationMatrixToEulerAngles(R):
-    # assert isRotationMatrix(R)
-
-    sy = math.sqrt(R[0, 0] * R[0, 0] + R[1, 0] * R[1, 0])
-
-    singular = sy < 1e-6
-
-    if not singular:
-        x = math.atan2(R[2, 1], R[2, 2])
-        y = math.atan2(-R[2, 0], sy)
-        z = math.atan2(R[1, 0], R[0, 0])
-    else:
-        x = math.atan2(-R[1, 2], R[1, 1])
-        y = math.atan2(-R[2, 0], sy)
-        z = 0
-
-    return np.array([x, y, z])
+    # return angles from 0 to 180
+    return angle_x_degrees, angle_y_degrees, angle_z_degrees
