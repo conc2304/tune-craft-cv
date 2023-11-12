@@ -3,8 +3,6 @@
 
 import numpy as np
 import cv2
-
-# import cv2.aruco as aruco
 import mediapipe as mp
 import math
 
@@ -20,12 +18,12 @@ LOG_ON = False
 DO_DRAW = True
 Storage_Op = "aruco_detector"
 Storage_Loc = "centroids"
-# op(Storage_Op).store(Storage_Loc, {})
+op(Storage_Op).store(Storage_Loc, {})
 
 
-def log(str):
+def log(*args):
     if LOG_ON:
-        print(str)
+        print(*args)
 
 
 # press 'Setup Parameters' in the OP to call this function to re-create the pa
@@ -37,6 +35,7 @@ def onSetupParameters(scriptOp):
 # called whenever custom pulse parameter is pushed
 def onPulse(par):
     log("[PULSE]")
+    print(par)
     return
 
 
@@ -44,12 +43,11 @@ def onCook(scriptOp):
     log("[COOK]")
 
     corners_store = scriptOp.fetch(Storage_Loc, [], storeDefault=True)
-    log(f"corners_store {len(corners_store)}")
+    # log(f"corners_store {len(corners_store)}")
     # If we have all 4 corners we dont need to get them again
     if corners_store != None and len(corners_store) == 4:
         scriptOp.store("num_corners", 4)
         log(f"Corners Storage Found")
-
         return
 
     scriptOp.store("num_corners", 0)
@@ -71,7 +69,9 @@ def onCook(scriptOp):
     # convert data to uint8
     image = np.uint8(image)
 
-    centroids = get_aruco_marker_data(image=image)
+    centroids, image = get_aruco_marker_data(image=image)
+    print(type(centroids), type(image))
+    image = cv2.flip(image, 1)
 
     scriptOp.store(Storage_Loc, centroids)
 
@@ -85,8 +85,11 @@ def onCook(scriptOp):
 
 # https://pyimagesearch.com/2021/01/04/opencv-augmented-reality-ar/
 def get_aruco_marker_data(image):
+    log("[INFO] Get Markers")
     if image is None:
         return None, None
+
+    image = cv2.flip(image, 1)
 
     (imgH, imgW) = image.shape[:2]
 
@@ -100,9 +103,15 @@ def get_aruco_marker_data(image):
     (corners, ids, rejected) = cv2.aruco.detectMarkers(image, arucoDict)
     # if we have not found four markers in the input image then we cannot
     # apply our augmented reality technique
-    if len(corners) != 4:
-        log("[INFO] could not find 4 corners...exiting")
-        return None
+    print("CL - ", len(corners))
+    print("CR - ", corners)
+    log(f"ids: {ids}")
+
+    for i, corner in enumerate(corners):
+        print(i, corner, corner.shape)
+    if len(corners) == 0:
+        log("[INFO] could not find corners...exiting")
+        return None, image
     else:
         log(f"[INFO] Markers detected")
         log(f"CORNERS: {corners}")
@@ -140,21 +149,24 @@ def get_aruco_marker_data(image):
         # marker
         cX = int((topLeft[0] + bottomRight[0]) / 2.0)
         cY = int((topLeft[1] + bottomRight[1]) / 2.0)
-        cv2.circle(image, (cX, cY), 4, (0, 0, 255), -1)
+
+        # image = cv2.flip(image, 1)
+        cv2.circle(image, (cX, cY), 2, (0, 0, 255), 2)
+        # image = cv2.flip(image, 1)
 
         # draw the ArUco marker ID on the image
         cv2.putText(
             image,
             str(markerID),
-            (topLeft[0], topLeft[1] - 15),
+            (topLeft[0] + 25, topLeft[1] - 25),
             cv2.FONT_HERSHEY_SIMPLEX,
-            0.25,
+            1,
             (0, 255, 0),
             2,
         )
 
         centroids.append((cX, cY))
 
-        # log("[INFO] ArUco marker ID: {}".format(markerID))
+        log("[INFO] ArUco marker ID: {}".format(markerID))
 
-    return centroids
+    return centroids, image

@@ -78,7 +78,10 @@ def onCook(scriptOp):
     # rgba values as 0-1
     video_feed = scriptOp.inputs[0].numpyArray(delayed=True)
 
-    objectrons = [{"shoe": objectron_shoe}, {"cup": objectron_cup}]
+    objectrons = [
+        {"shoe": objectron_shoe},
+        # {"cup": objectron_cup}
+    ]
 
     if not (video_feed is None or objectron_shoe is None):
         log("[RUN]")
@@ -105,7 +108,7 @@ def onCook(scriptOp):
                                 "x": landmark.x,
                                 "y": landmark.y,
                             }
-                            # print("l: ", landmark.x)
+
                             landmarks_2d.append(l)
 
                         landmarks_3d = []
@@ -127,8 +130,23 @@ def onCook(scriptOp):
                         log(detected_object)
 
                         num_decimals = 4
-                        angles = calculate_rotation_angles(landmarks_3d)
+                        # TODO - this does not seem right
+                        # angles = calculate_rotation_angles(landmarks_3d)
 
+                        x_angle = calculate_adjacent_angle(
+                            landmarks_2d[BACK_BOTTOM_LEFT], landmarks_2d[BACK_TOP_LEFT]
+                        )
+                        y_angle = calculate_adjacent_angle(
+                            landmarks_2d[BACK_BOTTOM_LEFT],
+                            landmarks_2d[BACK_BOTTOM_RIGHT],
+                        )
+                        z_angle = calculate_adjacent_angle(
+                            landmarks_2d[BACK_BOTTOM_LEFT],
+                            landmarks_2d[BACK_BOTTOM_RIGHT],
+                        )
+
+                        # print("3D: ", landmarks_3d[CENTER])
+                        # print("2D: ", landmarks_2d[CENTER])
                         feature_data = {
                             "item": object_name,
                             "cx": concat_to_decimals(
@@ -137,9 +155,12 @@ def onCook(scriptOp):
                             "cy": concat_to_decimals(
                                 landmarks_2d[CENTER]["y"], num_decimals
                             ),
-                            "rx": concat_to_decimals(angles[0], num_decimals),
-                            "ry": concat_to_decimals(angles[1], num_decimals),
-                            "rz": concat_to_decimals(angles[2], num_decimals),
+                            "rx": concat_to_decimals(x_angle, num_decimals),
+                            "ry": concat_to_decimals(y_angle, num_decimals),
+                            "rz": concat_to_decimals(z_angle, num_decimals),
+                            # "rx": concat_to_decimals(angles[0], num_decimals),
+                            # "ry": concat_to_decimals(angles[1], num_decimals),
+                            # "rz": concat_to_decimals(angles[2], num_decimals),
                             # We don't currently need these right now
                             # "tx": concat_to_decimals(
                             #     detected_object.translation[0], num_decimals
@@ -200,3 +221,27 @@ def calculate_rotation_angles(landmarks_3d):
 
     # return angles from 0 to 180
     return angle_x_degrees, angle_y_degrees, angle_z_degrees
+
+
+def calculate_adjacent_angle(point1, point2):
+    """
+    Calculates the adjacent angle of a right triangle formed by two points in 2D space.
+    Args:
+    point1 (tuple): The first point (x, y).
+    point2 (tuple): The second point (x, y).
+
+    Returns:
+    float: The adjacent angle in degrees.
+    """
+
+    # Calculate the differences in x and y coordinates
+    delta_x = point2["x"] - point1["x"]
+    delta_y = point2["y"] - point1["y"]
+
+    # Calculate the angle using atan2
+    angle_radians = math.atan2(delta_y, delta_x)
+
+    # Convert the angle to degrees
+    angle_degrees = math.degrees(angle_radians)
+
+    return angle_degrees

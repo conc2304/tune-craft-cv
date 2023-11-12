@@ -19,9 +19,9 @@ def onPulse(par):
 def onCook(scriptOp):
     # Get the data we stored in the Aruco Marker Detection Script
     centroids = op(Storage_Op).fetch(Storage_Loc)
-    # print("CENTROIDS", centroids)
+    print("CENTROIDS", centroids)
 
-    if len(centroids) != 4:
+    if centroids == None or len(centroids) != 4:
         # Exit out
         # We dont have a way to only update the 'detected' value in storage while keeping everything intact
 
@@ -29,21 +29,26 @@ def onCook(scriptOp):
         stored_corners = op("script2").chans("c_*")
         # Clear the Storage
         scriptOp.clear()
+        if len(stored_corners) == 0:
+            return
 
         # Rewrite the storage with detection set to false
         chan = scriptOp.appendChan("detected")
         chan[0] = 0
 
+        print("SC: ", stored_corners)
         labeled_corners = label_corners(stored_corners)
-        for corner_name, (x, y) in labeled_corners.items():
-            x_chan = scriptOp.appendChan(f"{corner_name}_x")
-            x_chan[0] = x
-            y_chan = scriptOp.appendChan(f"{corner_name}_y")
-            y_chan[0] = y
+        if labeled_corners != None:
+            for corner_name, (x, y) in labeled_corners.items():
+                x_chan = scriptOp.appendChan(f"{corner_name}_x")
+                x_chan[0] = x
+                y_chan = scriptOp.appendChan(f"{corner_name}_y")
+                y_chan[0] = y
 
         return
     else:
         # Clear and set detected flag
+        # print("[ INFO ] Marker Channels Found ")
         scriptOp.clear()
         chan = scriptOp.appendChan("detected")
         chan[0] = 1
