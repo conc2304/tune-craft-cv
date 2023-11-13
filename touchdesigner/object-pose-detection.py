@@ -51,7 +51,7 @@ objectron_shoe = mp_objectron.Objectron(
     min_detection_confidence=0.4,
     min_tracking_confidence=0.70,
     model_name="Shoe",
-    image_size=Resolution,
+    # image_size=Resolution,
 )
 
 objectron_cup = mp_objectron.Objectron(
@@ -132,21 +132,25 @@ def onCook(scriptOp):
                         num_decimals = 4
                         # TODO - this does not seem right
                         # angles = calculate_rotation_angles(landmarks_3d)
-
-                        x_angle = calculate_adjacent_angle(
-                            landmarks_2d[BACK_BOTTOM_LEFT], landmarks_2d[BACK_TOP_LEFT]
-                        )
-                        y_angle = calculate_adjacent_angle(
-                            landmarks_2d[BACK_BOTTOM_LEFT],
-                            landmarks_2d[BACK_BOTTOM_RIGHT],
-                        )
-                        z_angle = calculate_adjacent_angle(
-                            landmarks_2d[BACK_BOTTOM_LEFT],
-                            landmarks_2d[BACK_BOTTOM_RIGHT],
+                        x_angle, y_angle, z_angle = rotation_matrix_to_angles(
+                            detected_object.rotation
                         )
 
-                        # print("3D: ", landmarks_3d[CENTER])
-                        # print("2D: ", landmarks_2d[CENTER])
+                        # x_angle = calculate_adjacent_angle(
+                        #     landmarks_2d[BACK_BOTTOM_LEFT], landmarks_2d[BACK_TOP_LEFT]
+                        # )
+                        # y_angle = calculate_adjacent_angle(
+                        #     landmarks_2d[BACK_BOTTOM_LEFT],
+                        #     landmarks_2d[FRONT_BOTTOM_LEFT],
+                        # )
+                        # z_angle = calculate_adjacent_angle(
+                        #     landmarks_2d[BACK_BOTTOM_LEFT],
+                        #     landmarks_2d[BACK_BOTTOM_RIGHT],
+                        # )
+
+                        log("x_angle, y_angle, z_angle")
+                        log(x_angle, y_angle, z_angle)
+
                         feature_data = {
                             "item": object_name,
                             "cx": concat_to_decimals(
@@ -158,19 +162,6 @@ def onCook(scriptOp):
                             "rx": concat_to_decimals(x_angle, num_decimals),
                             "ry": concat_to_decimals(y_angle, num_decimals),
                             "rz": concat_to_decimals(z_angle, num_decimals),
-                            # "rx": concat_to_decimals(angles[0], num_decimals),
-                            # "ry": concat_to_decimals(angles[1], num_decimals),
-                            # "rz": concat_to_decimals(angles[2], num_decimals),
-                            # We don't currently need these right now
-                            # "tx": concat_to_decimals(
-                            #     detected_object.translation[0], num_decimals
-                            # ),
-                            # "ty": concat_to_decimals(
-                            #     detected_object.translation[1], num_decimals
-                            # ),
-                            # "tz": concat_to_decimals(
-                            #     detected_object.translation[2], num_decimals
-                            # ),
                         }
 
                         export_data.append(feature_data)
@@ -182,6 +173,34 @@ def onCook(scriptOp):
         scriptOp.store("detection", export_data)
 
     return
+
+
+def rotation_matrix_to_angles(r_matrix):
+    log(["[INFO] Rotation Matrix to Angles"])
+    # https://eecs.qmul.ac.uk/~gslabaugh/publications/euler.pdf
+    r_matrix[2, 0]  # = -sinB
+    theta1 = -1 * np.arcsin(r_matrix[2, 0])
+    theta2 = np.pi + 1 * np.arcsin(r_matrix[2, 0])
+
+    log(np.degrees(theta1), np.degrees(theta2))
+    R32 = r_matrix[2, 1]
+    R32
+    R33 = r_matrix[2, 2]
+    R33
+    phi1 = np.arctan2(R32 / np.cos(theta1), R33 / np.cos(theta1))
+    phi2 = np.arctan2(R32 / np.cos(theta2), R33 / np.cos(theta2))
+
+    log(np.degrees(phi1), np.degrees(phi2))
+    R21 = r_matrix[1, 0]
+    R21
+    R11 = r_matrix[0, 0]
+    R11
+
+    row1 = np.arctan2(R21 / np.cos(theta1), R11 / np.cos(theta1))
+    row2 = np.arctan2(R21 / np.cos(theta2), R11 / np.cos(theta2))
+
+    log(np.degrees(row1), np.degrees(row2))
+    return np.degrees(theta1), np.degrees(phi1), np.degrees(row1)
 
 
 def concat_to_decimals(number, decimals):

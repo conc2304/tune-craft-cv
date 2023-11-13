@@ -14,11 +14,12 @@ print("ME:", me)
 
 Resolution = (640, 360)
 
-LOG_ON = False
 DO_DRAW = True
 Storage_Op = "aruco_detector"
 Storage_Loc = "centroids"
 op(Storage_Op).store(Storage_Loc, {})
+
+LOG_ON = False
 
 
 def log(*args):
@@ -42,9 +43,9 @@ def onPulse(par):
 def onCook(scriptOp):
     log("[COOK]")
 
-    corners_store = scriptOp.fetch(Storage_Loc, [], storeDefault=True)
     # log(f"corners_store {len(corners_store)}")
     # If we have all 4 corners we dont need to get them again
+    corners_store = scriptOp.fetch(Storage_Loc, [], storeDefault=True)
     if corners_store != None and len(corners_store) == 4:
         scriptOp.store("num_corners", 4)
         log(f"Corners Storage Found")
@@ -61,23 +62,23 @@ def onCook(scriptOp):
         return
 
     log("[RUN - ARUCO]")
+
+    ## Prep the image for use in CV2 from TD
     image = cv2.cvtColor(video_feed, cv2.COLOR_BGR2RGB)
-
-    # Remap the values to the range [0, 255]
     image = np.interp(image, (0, 1), (0, 255))
-
-    # convert data to uint8
     image = np.uint8(image)
 
+    # Get the Marker Centers and image with added detections
     centroids, image = get_aruco_marker_data(image=image)
-    print(type(centroids), type(image))
+
+    # convert the image back for touchdesigner use
     image = cv2.flip(image, 1)
-
-    scriptOp.store(Storage_Loc, centroids)
-
     image = np.interp(image, (0, 255), (0, 1))
     image = np.float32(image)
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+
+    # store the results and return the image with marker drawings
+    scriptOp.store(Storage_Loc, centroids)
     scriptOp.copyNumpyArray(image)
 
     return
@@ -91,15 +92,11 @@ def get_aruco_marker_data(image):
 
     image = cv2.flip(image, 1)
 
-    (imgH, imgW) = image.shape[:2]
-
     # load the ArUCo dictionary, grab the ArUCo parameters, and detect
     # the markers
     log("[INFO] detecting markers...")
     arucoDict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_ARUCO_ORIGINAL)
-    # arucoParams = cv2.aruco
-    # print(cv2.aruco.DetectorParameters())
-    # arucoParams = aruco.DetectorParameters()
+
     (corners, ids, rejected) = cv2.aruco.detectMarkers(image, arucoDict)
     # if we have not found four markers in the input image then we cannot
     # apply our augmented reality technique

@@ -19,7 +19,7 @@ def onPulse(par):
 def onCook(scriptOp):
     # Get the data we stored in the Aruco Marker Detection Script
     centroids = op(Storage_Op).fetch(Storage_Loc)
-    print("CENTROIDS", centroids)
+    # print("CENTROIDS", centroids)
 
     if centroids == None or len(centroids) != 4:
         # Exit out
@@ -48,7 +48,6 @@ def onCook(scriptOp):
         return
     else:
         # Clear and set detected flag
-        # print("[ INFO ] Marker Channels Found ")
         scriptOp.clear()
         chan = scriptOp.appendChan("detected")
         chan[0] = 1
@@ -60,7 +59,6 @@ def onCook(scriptOp):
 
     # Using argsort to handle cases with multiple points having extreme values
     sorted_indices_x = np.argsort(x)
-    sorted_indices_y = np.argsort(y)
 
     # The lowest x will be our left, and the highest x will be our right
     left_indices = sorted_indices_x[:2]  # This could be lower left or upper left
