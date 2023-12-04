@@ -136,18 +136,6 @@ def onCook(scriptOp):
                             detected_object.rotation
                         )
 
-                        # x_angle = calculate_adjacent_angle(
-                        #     landmarks_2d[BACK_BOTTOM_LEFT], landmarks_2d[BACK_TOP_LEFT]
-                        # )
-                        # y_angle = calculate_adjacent_angle(
-                        #     landmarks_2d[BACK_BOTTOM_LEFT],
-                        #     landmarks_2d[FRONT_BOTTOM_LEFT],
-                        # )
-                        # z_angle = calculate_adjacent_angle(
-                        #     landmarks_2d[BACK_BOTTOM_LEFT],
-                        #     landmarks_2d[BACK_BOTTOM_RIGHT],
-                        # )
-
                         log("x_angle, y_angle, z_angle")
                         log(x_angle, y_angle, z_angle)
 
