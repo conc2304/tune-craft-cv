@@ -67,7 +67,7 @@ TuneCraft is an immersive and interactive computer vision art project that lever
   
   - #### Anaconda Virtual Environment Setup
     - Launch the Anaconda Prompt/Terminal 
-    - From the Anaconda Prompt/Terminal change directories into the root of this directory (ie environment.yaml should be in this directory from where you run the following command).
+    - From the Anaconda Prompt/Terminal change directories into the root of this directory (ie environment.yaml should be in this directory from where you run the following conda commands).
     - ##### Create Anaconda Environment:
       - `conda env create -f environment.yml`
         - This will install the necessary Python packages and dependencies required to run this project.
@@ -115,4 +115,9 @@ TuneCraft is an immersive and interactive computer vision art project that lever
       - Adjust these settings until the ArUco detection script locates all 4 ArUco markers to activate the object detection/tracking portion.
       - Once the ArUco Marker test card is gone, the object detection UI will automatically start, and you can now start playing with a shoe.
   
-  - #### 
+  - #### Using TuneCraft for real-time music control
+    - Assuming that there were no problems in the previous steps, you should now be able to use TuneCraft as real-time music.
+    - TuneCraft is set up to track a "Shoe" as the method to control the music parameters in Ableton Live.
+    - Moving the shoe along the X and Y plane on the ground, within the projected boundary, will update the speed of the drums and the melodic scale of the synthesizer playing. Rotating the shoe along the X, Y, and Z will additionally control the parameters of the audio effects that are running on the drums and the synthesizer. 
+    - As the Shoe is moved along the X and Y plane the projector will shine a spotlight on it and track it within the projection boundary.
+    - As the shoe is rotated along the X, Y, and Z plane, three colored concentric arcs of red, green, and blue will update their position around the Shoe in real-time as visual feedback to demonstrate the Shoe's current angle.
