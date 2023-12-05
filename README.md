@@ -112,3 +112,7 @@ TuneCraft is an immersive and interactive computer vision art project that lever
       - The Card Scale slider sets the overall scale of the test card to the projector, setting the scale to 100% of the full projection space.
       - The Marker Size slider adjusts the size of all of the ArUco markers relative to the full test card.
       - ![ArUco Test Card Settings](documentation-assets/ArUco-test-card-settings.png)
+      - Adjust these settings until the ArUco detection script locates all 4 ArUco markers to activate the object detection/tracking portion.
+      - Once the ArUco Marker test card is gone, the object detection UI will automatically start, and you can now start playing with a shoe.
+  
+  - #### 
