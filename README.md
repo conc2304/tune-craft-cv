@@ -6,7 +6,7 @@ By Jose Conchello - DGMD E-14: Wearable Devices and Computer Vision - Fall 2023 
 ## Project Description: 
 TuneCraft is an immersive and interactive computer vision art project that leverages 6D object pose detection to control music parameters in Ableton Live. This project is developed as the final project for DGMD E-14. It focuses on dynamic audio control through 6D object tracking. Utilizing computer vision, the project aims to create an interactive audio control environment where users can manipulate audio outputs through physical object movement and positioning.
 
-[Demo Video](https://www.youtube.com/watch?v=Zl6ZjDsAZTQ)
+[Project Walkthrough and Demo Video](https://www.youtube.com/watch?v=Zl6ZjDsAZTQ)
 
 
 ## Technologies Used:
