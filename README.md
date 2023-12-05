@@ -118,6 +118,8 @@ TuneCraft is an immersive and interactive computer vision art project that lever
   - #### Using TuneCraft for real-time music control
     - Assuming that there were no problems in the previous steps, you should now be able to use TuneCraft as real-time music.
     - TuneCraft is set up to track a "Shoe" as the method to control the music parameters in Ableton Live.
+    - The Ableton Value Mapping section of the Touchdesigner patch will update with the values that are being exported to Ableton.
+    - ![Ableton Mapping](documentation-assets/ableton-mapping.png)
     - Moving the shoe along the X and Y plane on the ground, within the projected boundary, will update the speed of the drums and the melodic scale of the synthesizer playing. Rotating the shoe along the X, Y, and Z will additionally control the parameters of the audio effects that are running on the drums and the synthesizer. 
     - As the Shoe is moved along the X and Y plane the projector will shine a spotlight on it and track it within the projection boundary.
     - As the shoe is rotated along the X, Y, and Z plane, three colored concentric arcs of red, green, and blue will update their position around the Shoe in real-time as visual feedback to demonstrate the Shoe's current angle.
