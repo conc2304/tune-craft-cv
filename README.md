@@ -3,7 +3,7 @@
 By Jose Conchello - DGMD E-14: Wearable Devices and Computer Vision - Fall 2023 Final Project
 
 <details open>
-<summary>Table of Contents (Click to toggle)</summary>
+<summary>Table of Contents (click to toggle)</summary>
 
 1. [Project Overview](#project-description)
 
@@ -30,8 +30,6 @@ TuneCraft is an immersive and interactive computer vision art project that lever
 
 [Project Walkthrough and Demo Video](https://www.youtube.com/watch?v=Zl6ZjDsAZTQ)
 
-
-
 ## Technologies Used:
   - ### Software and Plugins:
     - #### [TouchDesigner](http://touchdesigner.com/) (Free)
@@ -40,11 +38,11 @@ TuneCraft is an immersive and interactive computer vision art project that lever
       - Ableton Live is a digital audio workstation (DAW) that allows users to create, produce, and perform music. It's known for its loop-based composition and real-time performance.
     - #### [Max for Live by Ableton](https://www.ableton.com/en/live/max-for-live/) (Paid)
       - Max for Live is a visual programming environment that allows users to create and customize instruments, effects, and tools for live performance and visuals. It's a plug-in format that works exclusively in Ableton Live. 
-    - #### Inspired by Nature Ableton Max for Live Pack (Free)
+    - #### [Inspired by Nature](https://www.ableton.com/en/packs/inspired-nature/) Max for Live devices (Free)
       - Inspired by Nature is a playful collection of visual Max for Live devices created in collaboration with Dillon Bastan. Produce generative soundscapes, unpredictable melodies and evolving modulations with devices inspired by physical forces and the natural world.
-    - #### Rift by Minimal Audio (Paid)
+    - #### [Rift](https://www.minimal.audio/products/rift) by Minimal Audio (Paid)
       - Rift is a unique distortion plugin with 30 custom algorithms spanning both classic and never-before-heard processors. These effects are blended in the waveform engine, giving you precise control over how the two algorithms are combined, plus clear visual feedback of the results.
-    - #### TD Ableton (Free)
+    - #### [TDAbleton](https://docs.derivative.ca/TDAbleton) (Free)
       - TDAbleton is a tool that connects TouchDesigner and Ableton Live. It allows for full access and control of both programs. TDAbleton provides real-time data to and from Ableton. 
   - ### Frameworks and Libraries
     - #### Python
