@@ -20,11 +20,8 @@ By Jose Conchello - DGMD E-14: Wearable Devices and Computer Vision - Fall 2023 
    - [Projector and Webcam Setup Guide](#projector-and-webcam-setup-guide)
 
 5. [Running TuneCraft](#running-tunecraft)
-   - [Overview of the TouchDesigner Patch](#overview-of-the-touchdesigner-patch)
    - [Setting Up the Hardware in TouchDesigner](#setting-up-the-hardware-in-touchdesigner)
    - [Using TuneCraft for Music Control](#using-tunecraft-for-music-control)
-
-6. [Project Walkthrough and Demo Video](#project-walkthrough-and-demo-video)
 
 
 ## Project Description: 
