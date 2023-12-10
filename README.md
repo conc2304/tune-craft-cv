@@ -11,17 +11,17 @@ TuneCraft is an immersive and interactive computer vision art project that lever
 
 ## Technologies Used:
   - ### Software/Plugins:
-    - #### TouchDesigner (Free): 
+    - #### [TouchDesigner](http://touchdesigner.com/) (Free)
       - TouchDesigner is a visual programming language for creating interactive 2D and 3D applications. It's used by artists, programmers, and other creatives to make installations, performances, and other multimedia content.
-    - #### Ableton Live: (Paid, but has a free Intro trial available)
+    - #### [Ableton Live](https://www.ableton.com/) (Paid, but has a free Intro trial available)
       - Ableton Live is a digital audio workstation (DAW) that allows users to create, produce, and perform music. It's known for its loop-based composition and real-time performance.
-    - #### Max for Live by Ableton
+    - #### [Max for Live by Ableton](https://www.ableton.com/en/live/max-for-live/) (Paid)
       - Max for Live is a visual programming environment that allows users to create and customize instruments, effects, and tools for live performance and visuals. It's a plug-in format that works exclusively in Ableton Live. 
-    - #### Inspired by Nature Ableton Max for Live Pack
+    - #### Inspired by Nature Ableton Max for Live Pack (Free)
       - Inspired by Nature is a playful collection of visual Max for Live devices created in collaboration with Dillon Bastan. Produce generative soundscapes, unpredictable melodies and evolving modulations with devices inspired by physical forces and the natural world.
-    - #### Rift by Minimal Audio
+    - #### Rift by Minimal Audio (Paid)
       - Rift is a unique distortion plugin with 30 custom algorithms spanning both classic and never-before-heard processors. These effects are blended in the waveform engine, giving you precise control over how the two algorithms are combined, plus clear visual feedback of the results.
-    - #### TD Ableton
+    - #### TD Ableton (Free)
       - TDAbleton is a tool that connects TouchDesigner and Ableton Live. It allows for full access and control of both programs. TDAbleton provides real-time data to and from Ableton. 
   - ### Frameworks/Libs
     - #### Python
