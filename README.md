@@ -2,6 +2,30 @@
 
 By Jose Conchello - DGMD E-14: Wearable Devices and Computer Vision - Fall 2023 Final Project
 
+# Table of Contents
+
+1. [Project Overview](#project-description)
+
+2. [Technologies Used](#technologies-used)
+   - [Software and Plugins](#software-and-plugins)
+   - [Frameworks and Libraries](#frameworks-and-libraries)
+   - [Hardware Requirements](#hardware-requirements)
+
+3. [Installation Guide](#installation-guide)
+   - [Software and Plugin Installation](#software-and-plugin-installation)
+   - [Frameworks and Libraries Setup](#frameworks-and-libraries-setup)
+
+4. [Getting Started](#getting-started)
+   - [Setting Up the Project Environment](#setting-up-the-project-environment)
+   - [Projector and Webcam Setup Guide](#projector-and-webcam-setup-guide)
+
+5. [Running TuneCraft](#running-tunecraft)
+   - [Overview of the TouchDesigner Patch](#overview-of-the-touchdesigner-patch)
+   - [Setting Up the Hardware in TouchDesigner](#setting-up-the-hardware-in-touchdesigner)
+   - [Using TuneCraft for Music Control](#using-tunecraft-for-music-control)
+
+6. [Project Walkthrough and Demo Video](#project-walkthrough-and-demo-video)
+
 
 ## Project Description: 
 TuneCraft is an immersive and interactive computer vision art project that leverages 6D object pose detection to control music parameters in Ableton Live. This project is developed as the final project for DGMD E-14. It focuses on dynamic audio control through 6D object tracking. Utilizing computer vision, the project aims to create an interactive audio control environment where users can manipulate audio outputs through physical object movement and positioning.
@@ -9,8 +33,9 @@ TuneCraft is an immersive and interactive computer vision art project that lever
 [Project Walkthrough and Demo Video](https://www.youtube.com/watch?v=Zl6ZjDsAZTQ)
 
 
+
 ## Technologies Used:
-  - ### Software/Plugins:
+  - ### Software and Plugins:
     - #### [TouchDesigner](http://touchdesigner.com/) (Free)
       - TouchDesigner is a visual programming language for creating interactive 2D and 3D applications. It's used by artists, programmers, and other creatives to make installations, performances, and other multimedia content.
     - #### [Ableton Live](https://www.ableton.com/) (Paid, but has a free Intro trial available)
@@ -23,7 +48,7 @@ TuneCraft is an immersive and interactive computer vision art project that lever
       - Rift is a unique distortion plugin with 30 custom algorithms spanning both classic and never-before-heard processors. These effects are blended in the waveform engine, giving you precise control over how the two algorithms are combined, plus clear visual feedback of the results.
     - #### TD Ableton (Free)
       - TDAbleton is a tool that connects TouchDesigner and Ableton Live. It allows for full access and control of both programs. TDAbleton provides real-time data to and from Ableton. 
-  - ### Frameworks/Libs
+  - ### Frameworks and Libraries
     - #### Python
     - #### OpenCV
       - OpenCV (Open Source Computer Vision) is an open source, cross platform and free library that includes hundreds of computer vision algorithms. It has C++, Python, Java, MATLAB and more bindings. 
@@ -32,14 +57,14 @@ TuneCraft is an immersive and interactive computer vision art project that lever
     - #### Anaconda
       - Anaconda is a free, open-source distribution of the Python and R programming languages. It's designed for data science, machine learning, predictive analytics, and large-scale data processing. Anaconda aims to simplify package management and deployment. 
        
-  - ### Hardware
+  - ### Hardware Requirements
     - Computer able to handle the requirements of the above software suites
     - Projector
     - Webcam (and potentially a webcam mount)
     - A shoe
 
-## Installation:
-- ### Software/Plugins:
+## Installation Guide
+- ### Software and Plugin Installation
     - TouchDesigner (Free): 
       -  Download and install the latest version of TouchDesigner for your OS from the [Derivative website](https://derivative.ca/download).
     - Ableton Live: (Paid, but has a free Intro trial available)
@@ -60,14 +85,14 @@ TuneCraft is an immersive and interactive computer vision art project that lever
       - [Installation Guide](https://docs.derivative.ca/TDAbleton#Install_the_latest_TDAbleton_system)
       - [Youtube Guide](https://www.youtube.com/watch?v=8fBo5oFZPck&pp=ygURdGRhYmxldG9uIGluc3RhbGw%3D)
   
-- ### Frameworks/Libs
+- ### Frameworks and Libraries Setup
   - Anaconda
     - [Follow Download Page Instructions](https://www.anaconda.com/download)
 
 ## Getting Started:
   - Follow the instructions for installing the above software suites and frameworks.
   
-  - #### Anaconda Virtual Environment Setup
+  - #### Setting Up the Project Environment
     - Launch the Anaconda Prompt/Terminal 
     - From the Anaconda Prompt/Terminal change directories into the root of this directory (ie environment.yaml should be in this directory from where you run the following conda commands).
     - ##### Create Anaconda Environment:
@@ -81,7 +106,7 @@ TuneCraft is an immersive and interactive computer vision art project that lever
        -  Update the environment paths.
        -  Using the regular Anaconda installation paths, you should only need to update the user variable in the onStart() method.
        -  You should verify that these paths in the onStart() method match where your instance of Anaconda is running environments.
-  - #### Projector and Webcam Setup:
+  - #### Projector and Webcam Setup Guide
     - For best results, you will want to set up the projector as vertically as possible over the floor where the target object will be. The more overhead the projector is with over object/ground, the less the tracking will skew. The camera/sensor should match the projector's location and angle as best as possible.
     - The projector and the camera/sensor should both be plugged into the computer that will be running this project.
     - Below is a diagram of the ideal setup, though other configurations will also work.
@@ -92,9 +117,9 @@ TuneCraft is an immersive and interactive computer vision art project that lever
 ## Running TuneCraft
 - Open the Ableton Live file at `./ableton/generative-drums.als` file
 - Open the Touchdesigner file at `./touchdesigner/tune-craft-cv.toe`
-- ### Hardware setup in Touchdesigner.
+- ### Setting Up the Hardware in TouchDesigner
   - Below is a map/overview of the Touchdesigner patch highlighting the major segments of workflows
-  - ![Touchdesigner Patch Map](documentation-assets/touchdesigner-patch-map.png)
+  - ![Overview of the TouchDesigner Patch](documentation-assets/touchdesigner-patch-map.png)
   - #### Selecting the webcam
     - Navigate to the Video Input section of the patch in green (refer to the map above)
     - Click on the `videodevicein1` node, its preferences panel will open up.
@@ -117,7 +142,7 @@ TuneCraft is an immersive and interactive computer vision art project that lever
       - Adjust these settings until the ArUco detection script locates all 4 ArUco markers to activate the object detection/tracking portion.
       - Once the ArUco Marker test card is gone, the object detection UI will automatically start, and you can now start playing with a shoe.
   
-  - #### Using TuneCraft for real-time music control
+  - #### Using TuneCraft for Music Control
     - Assuming that there were no problems in the previous steps, you should now be able to use TuneCraft as real-time music.
     - TuneCraft is set up to track a "Shoe" as the method to control the music parameters in Ableton Live.
     - The Ableton Value Mapping section of the Touchdesigner patch will update with the values that are being exported to Ableton.
