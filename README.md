@@ -28,7 +28,9 @@ By Jose Conchello - DGMD E-14: Wearable Devices and Computer Vision - Fall 2023 
 ## Project Description: 
 TuneCraft is an immersive and interactive computer vision art project that leverages 6D object pose detection to control music parameters in Ableton Live. This project is developed as the final project for DGMD E-14. It focuses on dynamic audio control through 6D object tracking. Utilizing computer vision, the project aims to create an interactive audio control environment where users can manipulate audio outputs through physical object movement and positioning.
 
-[Project Walkthrough and Demo Video](https://www.youtube.com/watch?v=Zl6ZjDsAZTQ)
+[Project Walkthrough and Demo Video](https://youtu.be/2n1Z5icfN-w)
+[Project Presentation](https://youtu.be/IWK0HBRLtzk)
+[Link to Detailed Project Report](https://docs.google.com/document/d/1nDZOWPT0zQLzOOU27f3uuQJEj4dGhFwn-rsLJNAcoKE/edit)
 
 ## Technologies Used:
   - ### Software and Plugins:
@@ -36,10 +38,6 @@ TuneCraft is an immersive and interactive computer vision art project that lever
       - TouchDesigner is a visual programming language for creating interactive 2D and 3D applications. It's used by artists, programmers, and other creatives to make installations, performances, and other multimedia content.
     - #### [Ableton Live](https://www.ableton.com/) (Paid, but has a free Intro trial available)
       - Ableton Live is a digital audio workstation (DAW) that allows users to create, produce, and perform music. It's known for its loop-based composition and real-time performance.
-    - #### [Max for Live by Ableton](https://www.ableton.com/en/live/max-for-live/) (Paid)
-      - Max for Live is a visual programming environment that allows users to create and customize instruments, effects, and tools for live performance and visuals. It's a plug-in format that works exclusively in Ableton Live. 
-    - #### [Inspired by Nature](https://www.ableton.com/en/packs/inspired-nature/) Max for Live devices (Free)
-      - Inspired by Nature is a playful collection of visual Max for Live devices created in collaboration with Dillon Bastan. Produce generative soundscapes, unpredictable melodies and evolving modulations with devices inspired by physical forces and the natural world.
     - #### [Rift](https://www.minimal.audio/products/rift) by Minimal Audio (Paid)
       - Rift is a unique distortion plugin with 30 custom algorithms spanning both classic and never-before-heard processors. These effects are blended in the waveform engine, giving you precise control over how the two algorithms are combined, plus clear visual feedback of the results.
     - #### [TDAbleton](https://docs.derivative.ca/TDAbleton) (Free)
@@ -47,7 +45,7 @@ TuneCraft is an immersive and interactive computer vision art project that lever
   - ### Frameworks and Libraries
     - #### Python
     - #### OpenCV
-      - OpenCV (Open Source Computer Vision) is an open source, cross platform and free library that includes hundreds of computer vision algorithms. It has C++, Python, Java, MATLAB and more bindings. 
+      - OpenCV (Open Source Computer Vision) is an open-source, cross-platform and free library that includes hundreds of computer vision algorithms. It has C++, Python, Java, MATLAB and more bindings. 
     - #### MediaPipe
       - MediaPipe is an open-source framework for building pipelines to perform computer vision inference over arbitrary sensory data such as video or audio.
     - #### Anaconda
@@ -65,13 +63,6 @@ TuneCraft is an immersive and interactive computer vision art project that lever
       -  Download and install the latest version of TouchDesigner for your OS from the [Derivative website](https://derivative.ca/download).
     - Ableton Live: (Paid, but has a free Intro trial available)
       - [Installation](https://help.ableton.com/hc/en-us/articles/209773565-Installing-Live)
-    - Max for Live by Ableton (Paid)
-      - Installation:
-        - [Purchasing Info](https://help.ableton.com/hc/en-us/articles/206407124-Buying-Max-for-Live-)
-        - Note: Max for Live is not supported within Live Lite or Intro.
-    - Inspired by Nature Ableton Max for Live Pack
-      - [Download Pack](https://www.ableton.com/en/packs/inspired-nature/)
-      - [Installing Live Packs How to](https://help.ableton.com/hc/en-us/articles/115001930644-Installing-Live-Packs)
     - Rift by Minimal Audio
       - [Product Download Page](https://www.minimal.audio/products/rift)
       - [VST Plugins on Window](https://help.ableton.com/hc/en-us/articles/209071729-Using-VST-plug-ins-on-Windows)
@@ -126,7 +117,7 @@ TuneCraft is an immersive and interactive computer vision art project that lever
     - Click on the `window1` node and its preferences panel will open up.
     - Select the index of the monitor to send the projection tracking output to. The list of available monitors and their index will be in a window above the projection output section ** see image below
     - ![Projection Hardware Selection](documentation-assets/projector_selection.png)
-    - Once you have extended your display to use the projector via system settings (ie. not mirrored) and have selected the monitor in the previous step. Click on the "Full Screen" button in green. ** see image below.
+    - Once you have extended your display to use the projector via system settings (ie. not mirrored) and have selected the monitor in the previous step. Click on the "Full Screen" button in green. ** see the image below.
     - ![Start UI feed to Projector](documentation-assets/ui-projector-feed.png)
     - Now you should briefly see a white screen with 4 ArUco markers, one in each corner, being projected.
     - Once all 4 markers have been detected then the UI feed will switch to projecting the spotlight over the detection object when found.
