@@ -2,6 +2,8 @@
 
 By Jose Conchello - DGMD E-14: Wearable Devices and Computer Vision - Fall 2023 Final Project
 
+** Note ** This readme is meant as a guide to get the project up and running as well as to offer insight into the various ways and places where a user/developer would need to know to make updates to the project. For an in-depth explanation of the technical decisions made for this project please visit the full project report below in the [Project Overview](#project-description) section below.
+
 <details open>
 <summary>Table of Contents (click to toggle)</summary>
 
