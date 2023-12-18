@@ -51,21 +51,25 @@ mp_drawing = mp.solutions.drawing_utils
 # Notice we have static_image_mode set to true, ordinarily for video feeds using OpenCV we would set to false
 # However, since we are using Touchdesigner we don't have the ability to do a while loop without blocking further execution
 # So we just send in one frame at a time, its more compute expensive but it is more accurate
+
+# higher confidence means more accuracy - ie less likely to detect non-shoes
+# but that also makes it less likely to detect the shoe to begin with
 objectron_shoe = mp_objectron.Objectron(
     static_image_mode=True,
     max_num_objects=1,
-    min_detection_confidence=0.4,
-    min_tracking_confidence=0.70,
+    min_detection_confidence=0.1,
+    min_tracking_confidence=0.2,
     model_name="Shoe",
 )
 
-objectron_cup = mp_objectron.Objectron(
+objectron_2 = mp_objectron.Objectron(
     static_image_mode=True,
     max_num_objects=1,
-    min_detection_confidence=0.4,
-    min_tracking_confidence=0.70,
-    model_name="Chair",
+    min_detection_confidence=0.1,
+    min_tracking_confidence=0.1,
+    model_name="Cup",  # Options are ['Chair', 'Bicycle', 'Cup, 'Shoe']
 )
+
 
 # Main function to process each frame of video
 def onCook(scriptOp):
@@ -77,7 +81,7 @@ def onCook(scriptOp):
     # List of object detection models to apply
     objectrons = [
         {"shoe": objectron_shoe},
-        # {"cup": objectron_cup}  # this allows us to run multiple objectrons,
+        # {"cup": objectron_2}  # this allows us to run multiple objectrons,
         # but it is compute intensive and this script/touchdesigner runs synchronously so it blocks other execution causing lag
     ]
 
@@ -102,7 +106,6 @@ def onCook(scriptOp):
 
                 if results.detected_objects:
                     for detected_object in results.detected_objects:
-
                         # Extract 2D landmarks
                         landmarks_2d = []
                         for i, landmark in enumerate(
@@ -241,6 +244,7 @@ def concat_to_decimals(number, decimals):
         formatted_number = formatted_number[:-1]
 
     return formatted_number
+
 
 def log(*args):
     LOG_ON = False

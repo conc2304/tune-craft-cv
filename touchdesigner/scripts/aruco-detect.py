@@ -23,6 +23,7 @@ def log(*args):
     if LOG_ON:
         print(*args)
 
+
 # Function called to process each frame
 def onCook(scriptOp):
     log("[COOK]")
@@ -54,7 +55,7 @@ def onCook(scriptOp):
     image = np.uint8(image)
 
     # Get the centroids of ArUco markers and the image with added detections
-    centroids, image = get_aruco_marker_data(image=image)
+    centroids, image = get_aruco_marker_data(image)
 
     # Convert the image back to a format suitable for TouchDesigner
     image = cv2.flip(image, 1)
@@ -93,6 +94,7 @@ def get_aruco_marker_data(image):
     """
 
     log("[INFO] Get Markers")
+    log(image.shape)
 
     # If the image is None, return without processing
     if image is None:
@@ -107,7 +109,7 @@ def get_aruco_marker_data(image):
     log("[INFO] detecting markers...")
 
     # Detect markers in the image
-    (corners, ids) = cv2.aruco.detectMarkers(image, arucoDict)
+    (corners, ids, rejectedImgPoints ) = cv2.aruco.detectMarkers(image, arucoDict)
 
     # if we have not found four markers in the input image then we cannot
     # apply our augmented reality technique

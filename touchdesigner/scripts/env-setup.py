@@ -4,11 +4,12 @@ import platform
 
 # example path -> C:/Users/josec/anaconda3/envs/td-cv/Lib/site-packages
 
+
 # Function to execute on script start in Touchdesigner
 def onStart():
     # User and conda environment name configuration
     user = "josec"
-    condaEnv = "td-cv" # this is the conda env name from environment.yml
+    condaEnv = "td-cv2"  # this is the conda env name from environment.yml
 
     # Check if the operating system is Windows
     if platform.system() == "Windows":
