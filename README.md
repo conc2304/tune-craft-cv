@@ -30,7 +30,7 @@ TuneCraft is an immersive and interactive computer vision art project that lever
 
 [Project Walkthrough and Demo Video](https://youtu.be/2n1Z5icfN-w)\
 [Project Presentation](https://youtu.be/IWK0HBRLtzk)\
-[Link to Detailed Project Report](https://docs.google.com/document/d/1nDZOWPT0zQLzOOU27f3uuQJEj4dGhFwn-rsLJNAcoKE/edit)\
+[Link to Detailed Project Report](https://docs.google.com/document/d/1nDZOWPT0zQLzOOU27f3uuQJEj4dGhFwn-rsLJNAcoKE/edit)
 
 ## Technologies Used:
   - ### Software and Plugins:
